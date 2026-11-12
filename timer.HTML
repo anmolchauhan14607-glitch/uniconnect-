@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Focus & Productivity Dashboard</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text-main: #f8fafc;
+      --text-sub: #94a3b8;
+      --border: #334155;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      max-width: 900px;
+      width: 100%;
+    }
+
+    @media (max-width: 768px) {
+      .container { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    h2 {
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+      color: var(--text-main);
+    }
+
+    /* Timer Styling */
+    .timer-display {
+      font-size: 3.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin: 20px 0;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: var(--accent-hover);
+    }
+
+    button.secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-sub);
+    }
+
+    button.secondary:hover {
+      background-color: var(--border);
+      color: var(--text-main);
+    }
+
+    /* Task Styling */
+    .task-input {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      padding: 10px;
+      border-radius: 6px;
+      color: white;
+    }
+
+    input[type="text"]:focus {
+      outline: 1px solid var(--accent);
+    }
+
+    .task-list {
+      list-style: none;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--bg-dark);
+      border-radius: 6px;
+      margin-bottom: 8px;
+    }
+
+    .task-item.completed span {
+      text-decoration: line-through;
+      color: var(--text-sub);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Pomodoro Timer Card -->
+  <div class="card">
+    <h2>Focus Timer</h2>
+    <div class="timer-display" id="timer">25:00</div>
+    <div class="controls">
+      <button id="startBtn">Start</button>
+      <button id="pauseBtn" class="secondary">Pause</button>
+      <button id="resetBtn" class="secondary">Reset</button>
+    </div>
+  </div>
+
+  <!-- Task Planner Card -->
+  <div class="card">
+    <h2>Study Tasks</h2>
+    <div class="task-input">
+      <input type="text" id="taskField" placeholder="Add a new task...">
+      <button id="addTaskBtn">Add</button>
+    </div>
+    <ul class="task-list" id="taskList"></ul>
+  </div>
+</div>
+
+<script>
+  // Timer Logic
+  let timeLeft = 25 * 60;
+  let timerId = null;
+
+  const timerDisplay = document.getElementById('timer');
+  const startBtn = document.getElementById('startBtn');
+  const pauseBtn = document.getElementById('pauseBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+
+  startBtn.addEventListener('click', () => {
+    if (timerId !== null) return;
+    timerId = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateTimer();
+      } else {
+        clearInterval(timerId);
+        alert('Focus session complete!');
+      }
+    }, 1000);
+  });
+
+  pauseBtn.addEventListener('click', () => {
+    clearInterval(timerId);
+    timerId = null;
+  });
+
+  resetBtn.addEventListener('click', () => {
+    clearInterval(timerId);
+    timerId = null;
+    timeLeft = 25 * 60;
+    updateTimer();
+  });
+
+  // Task List Logic
+  const taskField = document.getElementById('taskField');
+  const addTaskBtn = document.getElementById('addTaskBtn');
+  const taskList = document.getElementById('taskList');
+
+  addTaskBtn.addEventListener('click', () => {
+    const text = taskField.value.trim();
+    if (!text) return;
+
+    const li = document.createElement('li');
+    li.className = 'task-item';
+    li.innerHTML = `
+      <span>${text}</span>
+      <button class="secondary" style="padding: 4px 8px;" onclick="this.parentElement.classList.toggle('completed')">✓</button>
+    `;
+
+    taskList.appendChild(li);
+    taskField.value = '';
+  });
+</script>
+
+</body>
+</html>

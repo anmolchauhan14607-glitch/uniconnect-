@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Ultimate Toolkit</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --text: #f8fafc;
+      --text-sub: #94a3b8;
+      --border: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 30px 15px;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      max-width: 1100px;
+      width: 100%;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    h2 { font-size: 1.2rem; margin-bottom: 16px; color: var(--text); }
+
+    /* Button & Input Styling */
+    input, select, button {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+
+    button {
+      background: var(--accent);
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover { background: var(--accent-hover); }
+
+    /* Sound Player */
+    .sound-controls { display: flex; gap: 10px; margin-top: 10px; }
+    .sound-btn { flex: 1; background: var(--bg); border: 1px solid var(--border); }
+    .sound-btn.active { border-color: var(--accent); background: var(--card-bg); }
+
+    /* Flashcard Flip Styling */
+    .flashcard-container {
+      perspective: 1000px;
+      height: 180px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    .flashcard {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.5s;
+      border-radius: 8px;
+    }
+
+    .flashcard.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    .card-back { transform: rotateY(180deg); color: var(--accent); }
+
+    /* Citation Box */
+    .citation-output {
+      margin-top: 12px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 6px;
+      border-left: 3px solid var(--accent);
+      font-size: 0.85rem;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+<div class="dashboard-grid">
+
+  <!-- MODULE 1: Ambient Focus Audio -->
+  <div class="card">
+    <h2>🎧 Focus Soundscapes</h2>
+    <p style="font-size: 0.85rem; color: var(--text-sub);">Synthesized audio generator for deep work study.</p>
+    
+    <div class="sound-controls">
+      <button class="sound-btn" onclick="toggleSound('brown')">Brown Noise</button>
+      <button class="sound-btn" onclick="toggleSound('rain')">Soft Rain</button>
+    </div>
+    
+    <div style="margin-top: 16px;">
+      <label style="font-size: 0.8rem; color: var(--text-sub);">Volume Control</label>
+      <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="0.5">
+    </div>
+  </div>
+
+  <!-- MODULE 2: Active Recall Flashcards -->
+  <div class="card">
+    <h2>🎴 Active Recall Cards</h2>
+    <div class="flashcard-container" onclick="flipCard()">
+      <div class="flashcard" id="flashcard">
+        <div class="card-face card-front" id="cardFront">Click to view Question</div>
+        <div class="card-face card-back" id="cardBack">Answer appears here</div>
+      </div>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 12px;">
+      <button onclick="prevCard()" style="background: transparent; border: 1px solid var(--border);">← Prev</button>
+      <button onclick="nextCard()">Next Card →</button>
+    </div>
+  </div>
+
+<script>
+  /* --- 1. AMBIENT AUDIO SYNTHESIS (Web Audio API) --- */
+  let audioCtx, noiseNode, gainNode;
+  let currentSound = null;
+
+  function initAudio() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      gainNode = audioCtx.createGain();
+      gainNode.connect(audioCtx.destination);
+    }
+  }
+
+  function createNoiseBuffer() {
+    const bufferSize = audioCtx.sampleRate * 2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const output = buffer.getChannelData(0);
+    let lastOut = 0.0;
+    
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      output[i] = (lastOut + (0.02 * white)) / 1.02; // Brown Noise formula
+      lastOut = output[i];
+      output[i] *= 3.5; 
+    }
+    return buffer;
+  }
+
+  function toggleSound(type) {
+    initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    if (currentSound === type) {
+      noiseNode.stop();
+      currentSound = null;
+      document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.remove('active'));
+      return;
+    }
+
+    if (noiseNode) noiseNode.stop();
+
+    noiseNode = audioCtx.createBufferSource();
+    noiseNode.buffer = createNoiseBuffer();
+    noiseNode.loop = true;
+    noiseNode.connect(gainNode);
+    noiseNode.start();
+    
+    currentSound = type;
+    document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+  }
+
+  document.getElementById('volumeControl').addEventListener('input', (e) => {
+    if (gainNode) gainNode.gain.value = e.target.value;
+  });
+
+  /* --- 2. FLASHCARD LOGIC --- */
+  const cards = [
+    { q: "What is the Feynman Technique?", a: "Explaining a concept in simple terms as if teaching a child." },
+    { q: "What is Spaced Repetition?", a: "Reviewing information at increasing intervals to boost retention." },
+    { q: "What is Active Recall?", a: "Testing yourself rather than passively re-reading notes." }
+  ];
+  let currentCardIdx = 0;
+
+  function loadCard() {
+    document.getElementById('flashcard').classList.remove('flipped');
+    setTimeout(() => {
+      document.getElementById('cardFront').textContent = cards[currentCardIdx].q;
+      document.getElementById('cardBack').textContent = cards[currentCardIdx].a;
+    }, 200);
+  }
+
+  function flipCard() {
+    document.getElementById('flashcard').classList.toggle('flipped');
+  }
+
+  function nextCard() {
+    currentCardIdx = (currentCardIdx + 1) % cards.length;
+    loadCard();
+  }
+
+  function prevCard() {
+    currentCardIdx = (currentCardIdx - 1 + cards.length) % cards.length;
+    loadCard();
+  }
+
+  loadCard();
+
+</script>
+
+</body>
+</html>

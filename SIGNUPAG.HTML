@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>uniConnect — Student Signup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* COLOR PALETTE: Coffee Daze, Beige, White */
+        :root {
+            --coffee-dark: #2A170E;        /* Dark espresso roast */
+            --coffee-daze: #3B2314;        /* Official uniConnect deep coffee */
+            --coffee-primary: #4A2E1B;     /* Coffee daze primary */
+            --coffee-medium: #6F4E37;      /* Classic coffee bean */
+            --coffee-warm: #8D6548;        /* uniConnect arch caramel/latte */
+            --beige-dark: #D8C3B0;         /* Warm campus beige */
+            --beige-mid: #E8D8C8;          /* Classic beige */
+            --beige-light: #F7F4EE;        /* uniConnect canvas cream */
+            --beige-ultra-light: #FAF7F2;  /* Soft cream tint */
+            --white: #FFFFFF;              /* Pure crisp white */
+            --text-dark: #2A170E;          /* Deep coffee text */
+            --text-muted: #72594A;         /* Secondary coffee text */
+            --border-beige: #E2D2C2;       /* Delicate beige borders */
+            --radius-lg: 24px;
+            --radius-md: 12px;
+            --radius-sm: 8px;
+            --shadow-card: 0 20px 45px rgba(59, 35, 20, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--beige-ultra-light);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(232, 216, 200, 0.5) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(216, 195, 176, 0.4) 0%, transparent 40%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            color: var(--text-dark);
+        }
+
+        /* MAIN CONTAINER - SPLIT SCREEN */
+        .app-wrapper {
+            width: 100%;
+            max-width: 1260px;
+            min-height: 740px;
+            background: var(--white);
+            border-radius: 28px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--beige-mid);
+            display: grid;
+            grid-template-columns: 1fr 1.15fr;
+            overflow: hidden;
+        }
+
+        /* LEFT SIDE: LOGO & 3-SIDE SLIDESHOW */
+        .slideshow-panel {
+            background: linear-gradient(150deg, #3B2314 0%, #2A170E 55%, #1D0F08 100%);
+            color: var(--white);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px;
+            overflow: hidden;
+        }
+
+        .slideshow-panel::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            left: -100px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(141, 101, 72, 0.35) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .panel-brand-header {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo-container {
+            width: 48px;
+            height: 48px;
+            background: var(--beige-light);
+            border-radius: 14px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .brand-logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .brand-text-header h1 {
+            font-size: 1.45rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--beige-light);
+            line-height: 1.1;
+        }
+
+        .brand-text-header h1 span {
+            color: #E2BA9A;
+        }
+
+        .brand-text-header p {
+            font-size: 0.72rem;
+            color: var(--beige-dark);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+
+        /* Slideshow Container */
+        .slides-container {
+            position: relative;
+            z-index: 4;
+            min-height: 430px;
+            display: flex;
+            align-items: center;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(20px);
+            transition: all 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        /* Slide Logo Visual Card */
+        .slide-logo-card {
+            background: rgba(247, 244, 238, 0.95);
+            border-radius: 18px;
+            padding: 16px 22px;
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+            width: fit-content;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .slide-logo-card .logo-mark {
+            width: 52px;
+            height: 52px;
+            flex-shrink: 0;
+        }
+
+        .slide-logo-card .logo-title {
+            color: var(--coffee-daze);
+            font-size: 1.25rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        .slide-logo-card .logo-subtitle {
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--coffee-warm);
+        }
+
+        .slide-title {
+            font-size: 2.25rem;
+            font-weight: 800;
+            line-height: 1.18;
+            letter-spacing: -0.03em;
+            color: var(--white);
+        }
+
+        .slide-title .highlight {
+            color: #E2BA9A;
+            display: block;
+        }
+
+        .slide-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--beige-light);
+            opacity: 0.92;
+        }
+
+        /* Quotes Presentation */
+        .slide-quote-box {
+            position: relative;
+            background: rgba(255, 255, 255, 0.07);
+            border-left: 4px solid #E2BA9A;
+            padding: 24px 28px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            backdrop-filter: blur(12px);
+            margin: 4px 0;
+        }
+
+        .quote-icon {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: #E2BA9A;
+            line-height: 0;
+            position: absolute;
+            top: 24px;
+            left: 12px;
+            opacity: 0.35;
+        }
+
+        .slide-quote-text {
+            font-family: 'Playfair Display', serif;
+            font-style: italic;
+            font-size: 1.25rem;
+            line-height: 1.55;
+            color: var(--beige-light);
+            margin-bottom: 14px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .slide-author-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .author-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #523424;
+            border: 2px solid #E2BA9A;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--beige-light);
+            font-size: 0.92rem;
+        }
+
+        .author-name {
+            font-weight: 700;
+            font-size: 0.98rem;
+            color: var(--white);
+        }
+
+        .author-role {
+            font-size: 0.8rem;
+            color: var(--beige-dark);
+        }
+
+        .feature-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .feature-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(232, 216, 200, 0.2);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--beige-light);
+        }
+
+        /* Slideshow Controls */
+        .slideshow-controls {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .slide-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.28);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            width: 32px;
+            background: var(--beige-light);
+        }
+
+        .slide-nav-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-arrow-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-arrow-btn:hover {
+            background: var(--beige-light);
+            color: var(--coffee-daze);
+        }
+
+        /* RIGHT SIDE: SIGNUP FORM */
+        .form-panel {
+            padding: 46px 50px;
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow-y: auto;
+            max-height: 90vh;
+        }
+
+        .form-panel::-webkit-scrollbar {
+            width: 6px;
+        }
+        .form-panel::-webkit-scrollbar-thumb {
+            background: var(--beige-mid);
+            border-radius: 10px;
+        }
+
+        .form-header {
+            margin-bottom: 22px;
+        }
+
+        .form-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--coffee-primary);
+            background: var(--beige-light);
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 10px;
+            border: 1px solid var(--beige-mid);
+        }
+
+        .form-title {
+            font-size: 1.85rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--coffee-daze);
+            margin-bottom: 6px;
+        }
+
+        .form-subtitle {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+        }
+
+        .signup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-row-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-label {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--coffee-daze);
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            width: 18px;
+            height: 18px;
+            color: var(--coffee-warm);
+            pointer-events: none;
+        }
+
+        .form-control {
+            width: 100%;
+            height: 44px;
+            padding: 0 14px 0 42px;
+            font-size: 0.9rem;
+            border: 1.5px solid var(--border-beige);
+            border-radius: var(--radius-sm);
+            background-color: var(--beige-ultra-light);
+            color: var(--text-dark);
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-control:focus {
+            background-color: var(--white);
+            border-color: var(--coffee-daze);
+            box-shadow: 0 0 0 3.5px rgba(59, 35, 20, 0.12);
+        }
+
+        .form-control::placeholder {
+            color: #A89585;
+            font-size: 0.86rem;
+        }
+
+        .toggle-password-btn {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--coffee-warm);
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .toggle-password-btn:hover {
+            color: var(--coffee-daze);
+        }
+
+        /* STUDENT SUBJECTS (5 ROWS) */
+        .subjects-card {
+            background: var(--beige-ultra-light);
+            border: 1.5px solid var(--beige-mid);
+            border-radius: var(--radius-md);
+            padding: 14px 16px;
+        }
+
+        .subjects-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .subjects-title {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--coffee-daze);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subjects-count-tag {
+            background: var(--coffee-daze);
+            color: var(--beige-light);
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+
+        .subjects-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .subject-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .subject-index {
+            width: 24px;
+            height: 24px;
+            background: var(--beige-mid);
+            color: var(--coffee-daze);
+            font-weight: 700;
+            font-size: 0.72rem;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .subject-input {
+            width: 100%;
+            height: 38px;
+            padding: 0 12px;
+            font-size: 0.86rem;
+            border: 1px solid var(--border-beige);
+            border-radius: 6px;
+            background: var(--white);
+            color: var(--text-dark);
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .subject-input:focus {
+            border-color: var(--coffee-daze);
+            box-shadow: 0 0 0 2px rgba(59, 35, 20, 0.1);
+        }
+
+        /* SUBMIT & GOOGLE BUTTONS */
+        .btn-submit {
+            width: 100%;
+            height: 48px;
+            background: linear-gradient(135deg, var(--coffee-daze) 0%, #4A2E1B 100%);
+            color: var(--white);
+            font-size: 0.98rem;
+            font-weight: 700;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(59, 35, 20, 0.25);
+            transition: all 0.25s ease;
+            margin-top: 2px;
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #271810 0%, var(--coffee-daze) 100%);
+            transform: translateY(-1.5px);
+            box-shadow: 0 10px 24px rgba(59, 35, 20, 0.3);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 10px 0;
+            color: #A89585;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--beige-mid);
+        }
+
+        .divider span {
+            padding: 0 12px;
+        }
+
+        .btn-google {
+            width: 100%;
+            height: 46px;
+            background: var(--white);
+            color: var(--coffee-daze);
+            border: 1.5px solid var(--beige-mid);
+            border-radius: var(--radius-sm);
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-google:hover {
+            background: var(--beige-ultra-light);
+            border-color: var(--coffee-warm);
+        }
+
+        .btn-google svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .form-footer {
+            margin-top: 14px;
+            text-align: center;
+            font-size: 0.86rem;
+            color: var(--text-muted);
+        }
+
+        .form-footer a {
+            color: var(--coffee-daze);
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 1.5px solid var(--beige-dark);
+        }
+
+        .form-footer a:hover {
+            border-color: var(--coffee-daze);
+        }
+
+        @media (max-width: 980px) {
+            .app-wrapper {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+            .slideshow-panel {
+                min-height: 420px;
+                padding: 36px 28px;
+            }
+            .form-panel {
+                padding: 36px 28px;
+                max-height: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        
+        <!-- LEFT SIDE: LOGO + 3-SIDE SLIDESHOW -->
+        <div class="slideshow-panel" id="slideshowPanel">
+            
+            <!-- Top Brand Header with uniConnect Logo -->
+            <div class="panel-brand-header">
+                <div class="brand-logo-container" title="uniConnect Logo">
+                    <img src="logo.jpg" alt="uniConnect" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="display:block;">
+                    <svg class="brand-svg-fallback" viewBox="0 0 100 100" fill="none" style="display:none; width:100%; height:100%;">
+                        <path d="M28 35C28 35 28 58 28 65C28 73 35 78 43 74C49 71 52 64 52 64" stroke="#3B2314" stroke-width="9" stroke-linecap="round"/>
+                        <path d="M30 33L45 25L57 32L42 40Z" fill="#3B2314"/>
+                        <path d="M26 36V46" stroke="#3B2314" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="56" cy="48" r="3" fill="#3B2314"/>
+                        <path d="M63 75V54C63 44 73 44 73 54V75" stroke="#8D6548" stroke-width="9" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="brand-text-header">
+                    <h1>uni<span>Connect</span></h1>
+                    <p>People • Campus • Opportunities</p>
+                </div>
+            </div>
+
+            <!-- Slideshow Content (3 Slides) -->
+            <div class="slides-container">
+                
+                <!-- SLIDE 1: Logo + Student Assistance Welcome -->
+                <div class="slide active" id="slide-1">
+                    <div class="slide-logo-card">
+                        <div class="logo-mark">
+                            <img src="logo.jpg" alt="uniConnect" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width:100%; height:100%; object-fit:contain; display:block;">
+                            <svg viewBox="0 0 100 100" fill="none" style="display:none; width:100%; height:100%;">
+                                <path d="M28 35C28 35 28 58 28 65C28 73 35 78 43 74C49 71 52 64 52 64" stroke="#3B2314" stroke-width="9" stroke-linecap="round"/>
+                                <path d="M30 33L45 25L57 32L42 40Z" fill="#3B2314"/>
+                                <path d="M26 36V46" stroke="#3B2314" stroke-width="2.5" stroke-linecap="round"/>
+                                <circle cx="56" cy="48" r="3" fill="#3B2314"/>
+                                <path d="M63 75V54C63 44 73 44 73 54V75" stroke="#8D6548" stroke-width="9" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="logo-title">uniConnect</div>
+                            <div class="logo-subtitle">A More Connected Tomorrow</div>
+                        </div>
+                    </div>
+
+                    <h2 class="slide-title">
+                        Empowering Your
+                        <span class="highlight">University Journey.</span>
+                    </h2>
+
+                    <p class="slide-desc">
+                        Your dedicated student assistance hub. Connect with campus peers, track your courses, organize study circles, and discover university opportunities.
+                    </p>
+
+                    <div class="feature-pills">
+                        <div class="feature-pill">🎓 Verified Students</div>
+                        <div class="feature-pill">📚 5-Subject Tracker</div>
+                        <div class="feature-pill">☕ Campus Network</div>
+                    </div>
+                </div>
+
+                <!-- SLIDE 2: Logo + Steve Jobs Quote -->
+                <div class="slide" id="slide-2">
+                    <div class="slide-logo-card">
+                        <div class="logo-mark">
+                            <img src="logo.jpg" alt="uniConnect" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width:100%; height:100%; object-fit:contain; display:block;">
+                            <svg viewBox="0 0 100 100" fill="none" style="display:none; width:100%; height:100%;">
+                                <path d="M28 35C28 35 28 58 28 65C28 73 35 78 43 74C49 71 52 64 52 64" stroke="#3B2314" stroke-width="9" stroke-linecap="round"/>
+                                <path d="M30 33L45 25L57 32L42 40Z" fill="#3B2314"/>
+                                <path d="M26 36V46" stroke="#3B2314" stroke-width="2.5" stroke-linecap="round"/>
+                                <circle cx="56" cy="48" r="3" fill="#3B2314"/>
+                                <path d="M63 75V54C63 44 73 44 73 54V75" stroke="#8D6548" stroke-width="9" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="logo-title">uniConnect</div>
+                            <div class="logo-subtitle">Student Inspiration</div>
+                        </div>
+                    </div>
+
+                    <div class="slide-quote-box">
+                        <div class="quote-icon">“</div>
+                        <p class="slide-quote-text">
+                            "The only way to do great work is to love what you do. If you haven't found it yet, keep looking. Don't settle."
+                        </p>
+                        <div class="slide-author-wrapper">
+                            <div class="author-avatar">SJ</div>
+                            <div>
+                                <div class="author-name">Steve Jobs</div>
+                                <div class="author-role">Advice for University Students</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.9rem; color: var(--beige-dark); line-height: 1.5;">
+                        Fuel your academic ambitions and discover what moves you forward.
+                    </p>
+                </div>
+
+                <!-- SLIDE 3: Logo + Dr. APJ Abdul Kalam Quote -->
+                <div class="slide" id="slide-3">
+                    <div class="slide-logo-card">
+                        <div class="logo-mark">
+                            <img src="logo.jpg" alt="uniConnect" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" style="width:100%; height:100%; object-fit:contain; display:block;">
+                            <svg viewBox="0 0 100 100" fill="none" style="display:none; width:100%; height:100%;">
+                                <path d="M28 35C28 35 28 58 28 65C28 73 35 78 43 74C49 71 52 64 52 64" stroke="#3B2314" stroke-width="9" stroke-linecap="round"/>
+                                <path d="M30 33L45 25L57 32L42 40Z" fill="#3B2314"/>
+                                <path d="M26 36V46" stroke="#3B2314" stroke-width="2.5" stroke-linecap="round"/>
+                                <circle cx="56" cy="48" r="3" fill="#3B2314"/>
+                                <path d="M63 75V54C63 44 73 44 73 54V75" stroke="#8D6548" stroke-width="9" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="logo-title">uniConnect</div>
+                            <div class="logo-subtitle">Scholar Vision</div>
+                        </div>
+                    </div>
+
+                    <div class="slide-quote-box">
+                        <div class="quote-icon">“</div>
+                        <p class="slide-quote-text">
+                            "Dream, dream, dream. Dreams transform into thoughts and thoughts result in action."
+                        </p>
+                        <div class="slide-author-wrapper">
+                            <div class="author-avatar">AK</div>
+                            <div>
+                                <div class="author-name">Dr. A.P.J. Abdul Kalam</div>
+                                <div class="author-role">Inspiration for Youth & Scholars</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <p style="font-size: 0.9rem; color: var(--beige-dark); line-height: 1.5;">
+                        Turn student vision into real-world action with the right peer support.
+                    </p>
+                </div>
+
+            </div>
+
+            <!-- Slideshow Controls -->
+            <div class="slideshow-controls">
+                <div class="slide-dots">
+                    <div class="dot active" onclick="goToSlide(0)"></div>
+                    <div class="dot" onclick="goToSlide(1)"></div>
+                    <div class="dot" onclick="goToSlide(2)"></div>
+                </div>
+
+                <div class="slide-nav-btns">
+                    <button type="button" class="nav-arrow-btn" onclick="prevSlide()" title="Previous slide">&#10094;</button>
+                    <button type="button" class="nav-arrow-btn" onclick="nextSlide()" title="Next slide">&#10095;</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- RIGHT SIDE: SIGNUP FORM -->
+        <div class="form-panel">
+            
+            <div class="form-header">
+                <span class="form-badge">Student Registration</span>
+                <h2 class="form-title">Join uniConnect</h2>
+                <p class="form-subtitle">Enter your details to activate your student assistance portal.</p>
+            </div>
+
+            <!-- Form: Redirects to login.html on submit -->
+            <form class="signup-form" id="signupForm" action="LOGINAG.HTML" method="GET" onsubmit="handleSignupSubmit(event)">
+                
+                <!-- Row 1: Username & Student ID -->
+                <div class="form-row-2col">
+                    <div class="input-group">
+                        <label class="input-label" for="username">User Name</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
+                            <input type="text" id="username" name="username" class="form-control" placeholder="e.g. Maya Chen" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="studentId">Student ID</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+                                <line x1="7" y1="8" x2="17" y2="8"></line>
+                                <line x1="7" y1="12" x2="13" y2="12"></line>
+                            </svg>
+                            <input type="text" id="studentId" name="studentId" class="form-control" placeholder="e.g. STU-2024-889" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Row 2: Student Email & Student Password -->
+                <div class="form-row-2col">
+                    <div class="input-group">
+                        <label class="input-label" for="studentEmail">Student Email</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                            </svg>
+                            <input type="email" id="studentEmail" name="studentEmail" class="form-control" placeholder="maya@university.edu" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label" for="studentPass">Student Password</label>
+                        <div class="input-wrapper">
+                            <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <input type="password" id="studentPass" name="studentPass" class="form-control" placeholder="Create strong password" required>
+                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('studentPass', this)" title="Show/Hide Password">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STUDENT SUBJECTS (5 Rows under this section) -->
+                <div class="subjects-card">
+                    <div class="subjects-header">
+                        <div class="subjects-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                            </svg>
+                            <span>Student Subjects</span>
+                        </div>
+                        <span class="subjects-count-tag">5 Courses</span>
+                    </div>
+
+                    <div class="subjects-grid">
+                        <div class="subject-row">
+                            <span class="subject-index">1</span>
+                            <input type="text" name="subject_1" class="subject-input" placeholder="Subject 1 (e.g. Data Structures & Algorithms)" required>
+                        </div>
+                        <div class="subject-row">
+                            <span class="subject-index">2</span>
+                            <input type="text" name="subject_2" class="subject-input" placeholder="Subject 2 (e.g. Computer Architecture)" required>
+                        </div>
+                        <div class="subject-row">
+                            <span class="subject-index">3</span>
+                            <input type="text" name="subject_3" class="subject-input" placeholder="Subject 3 (e.g. Database Systems)" required>
+                        </div>
+                        <div class="subject-row">
+                            <span class="subject-index">4</span>
+                            <input type="text" name="subject_4" class="subject-input" placeholder="Subject 4 (e.g. Operating Systems)" required>
+                        </div>
+                        <div class="subject-row">
+                            <span class="subject-index">5</span>
+                            <input type="text" name="subject_5" class="subject-input" placeholder="Subject 5 (e.g. Software Engineering)" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span>Submit & Proceed to Login</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </button>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>or sign up with</span>
+                </div>
+
+                <!-- Sign up with Google -->
+                <button type="button" class="btn-google" onclick="handleGoogleAuth()">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" fill="#EA4335"/>
+                    </svg>
+                    <span>Sign up with Google</span>
+                </button>
+
+                <div class="form-footer">
+                    Already registered with uniConnect? <a href="LOGINAG.HTML">Log In</a>
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        const totalSlides = slides.length;
+        let slideInterval;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => slide.classList.toggle('active', i === index));
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            showSlide((currentSlide + 1) % totalSlides);
+        }
+
+        function prevSlide() {
+            showSlide((currentSlide - 1 + totalSlides) % totalSlides);
+        }
+
+        function goToSlide(index) {
+            showSlide(index);
+            resetAutoSlide();
+        }
+
+        function startAutoSlide() {
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        function resetAutoSlide() {
+            clearInterval(slideInterval);
+            startAutoSlide();
+        }
+
+        const slideshowPanel = document.getElementById('slideshowPanel');
+        slideshowPanel.addEventListener('mouseenter', () => clearInterval(slideInterval));
+        slideshowPanel.addEventListener('mouseleave', () => startAutoSlide());
+        startAutoSlide();
+
+        function togglePasswordVisibility(fieldId, btn) {
+            const input = document.getElementById(fieldId);
+            input.type = input.type === 'password' ? 'text' : 'password';
+        }
+
+        function handleSignupSubmit(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const studentId = document.getElementById('studentId').value;
+            
+            btn.innerHTML = `<span>Redirecting to Login...</span>`;
+            btn.style.opacity = '0.85';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                window.location.href = `LOGINAG.HTML?registered=true&studentId=${encodeURIComponent(studentId)}`;
+            }, 750);
+        }
+
+        function handleGoogleAuth() {
+            alert("Connecting to University Google SSO for uniConnect...\nRedirecting to login upon verification.");
+            window.location.href = "LOGINAG.HTML?auth=google";
+        }
+    </script>
+</body>
+</html>

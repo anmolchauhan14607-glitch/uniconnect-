@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      width: 100%;
+      max-width: 1100px;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.12);
+      min-height: 620px;
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 50px 60px;
+      position: relative;
+    }
+
+    .greeting h1 {
+      font-size: 32px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+
+    .greeting p {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 45px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .card {
+      background: linear-gradient(135deg, #2A170E, #2A170E);
+      color: white;
+      border-radius: 14px;
+      padding: 28px 24px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 6px 18px rgba(30, 136, 229, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px #e94c0356(30, 136, 229, 0.4);
+    }
+
+    .card-icon {
+      width: 52px;
+      height: 52px;
+      background: rgba(255,255,255,0.25);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      font-size: 24px;
+    }
+
+    .card h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .card p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px;
+      background: linear-gradient(135deg, #2A170E, #2A170E);
+      background: linear-gradient(180deg, #2A170E, #2A170E);
+      color: white;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .sidebar-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      padding: 10px 12px;
+      border-radius: 10px;
+      transition: background 0.2s;
+      font-size: 16px;
+      font-weight: 500;
+    }
+
+    .sidebar-item:hover {
+      background: rgba(255,255,255,0.18);
+    }
+
+    .sidebar-icon {
+      font-size: 22px;
+      width: 28px;
+      text-align: center;
+    }
+
+    .logout-btn {
+      margin-top: auto;
+      background: transparent;
+      border: 2px solid rgba(255,255,255,0.6);
+      color: white;
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: white;
+      color: #1565c0;
+      border-color: white;
+    }
+
+    /* Responsive */
+    @media (max-width: 800px) {
+      .container {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 20px;
+      }
+      .logout-btn {
+        margin-top: 10px;
+        width: 100%;
+      }
+      .main {
+        padding: 30px 25px;
+      }
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+    <script>
+  // If user is not logged in, send them back to login page
+  if (localStorage.getItem("isLoggedIn") !== "true") {
+    window.location.href = "LOGINAG.HTML";
+  }
+</script>
+
+  <div class="container">
+    <!-- Main Content -->
+    <div class="main">
+      <div class="greeting">
+        <h1>Hi, Student!</h1>
+        <p>How can we help you today?</p>
+      </div>
+
+      <div class="cards">
+        <!-- Card 1 -->
+        <div class="card" onclick="handleClick('I Didn\'t Understand')">
+          <div class="card-icon">🔍</div>
+          <h3>I Didn't Understand</h3>
+          <p>Get explanation by PHINIX</p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card" onclick="handleClick('Exam schedule')">
+          <div class="card-icon">📅</div>
+          <h3>Exam schedule</h3>
+          <p>stay updated</p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="card" onclick="handleClick('What should I learn')">
+          <div class="card-icon">🌐</div>
+          <h3>what should i learn</h3>
+          <p>Discover skills that shape your future</p>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="card" onclick="handleClick('Resume check')">
+          <div class="card-icon">👤</div>
+          <h3>Resume check</h3>
+          <p>Get tips to make your resume standout</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-item" onclick="handleClick('Unimap')">
+        <span class="sidebar-icon">📍</span>
+        <span>Unimap</span>
+      </div>
+
+      <div class="sidebar-item" onclick="handleClick('Faculty room')">
+        <span class="sidebar-icon">💬</span>
+        <span>Faculty room</span>
+      </div>
+
+      <div class="sidebar-item" onclick="handleClick('Student corner')">
+        <span class="sidebar-icon">👥</span>
+        <span>Student corner</span>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">
+        ← Logout
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // Handle clicks on all cards and sidebar items
+    function handleClick(feature) {
+      alert("You clicked: " + feature + "\n\n(This is a placeholder. You can replace this with actual page navigation later.)");
+      
+      // Example of how you can redirect later:
+      // window.location.href = feature.toLowerCase().replace(/\s+/g, '-') + '.html';
+    }
+
+    // Logout → redirect to signup page
+    function logout() {
+  // Clear login status
+  localStorage.removeItem("isLoggedIn");
+  localStorage.removeItem("studentId");
+
+  // Go back to login page
+  window.location.href = "SIGNUPAG.HTML";
+}
+  </script>
+
+</body>
+</html>
